@@ -4,10 +4,14 @@ using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using PersonalProjects.Function.Repositories;
-public class UserRepository(IDbConnection dbConnection) : IUserRepository
+public class UserRepository : IUserRepository
 {
     private readonly IDbConnection _dbConnection;
 
+    public UserRepository(IDbConnection dbConnection)
+    {
+        _dbConnection = dbConnection;
+    }
     public Task<User> CreateAsync(User entity)
     {
         throw new System.NotImplementedException();
