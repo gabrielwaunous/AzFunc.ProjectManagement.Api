@@ -1,19 +1,38 @@
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
-
-namespace PersonalProjects.Function.Repositories
+using Dapper;
+using Microsoft.Data.SqlClient;
+using PersonalProjects.Function.Repositories;
+public class UserRepository(IDbConnection dbConnection) : IUserRepository
 {
-    public class UserRepository(string connectionString) : IUserRepository
-    {
-        private readonly string _connectionString = connectionString;
+    private readonly IDbConnection _dbConnection;
 
-        public async Task<IEnumerable<User>> GetAllAsync()
-        {
-            using (IDbConnection dbConnection = new SqlConnection(_connectionString))
-            {
-                await dbConnection.OpenAsync();
-                return await dbConnection.QueryAsync<User>("SELECT * FROM User");
-            }
-        }
+    public Task<User> CreateAsync(User entity)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public Task<bool> DeleteAsync(int id)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public async Task<IEnumerable<User>> GetAllAsync()
+    {
+        var query = "SELECT * FROM Users";
+        var users = await _dbConnection.QueryAsync<User>(query);
+        return users;
+    }
+
+    public Task<User> GetByIdAsync(int id)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public Task<User> UpdateAsync(User entity)
+    {
+        throw new System.NotImplementedException();
     }
 }
+
