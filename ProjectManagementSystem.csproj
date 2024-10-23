@@ -5,6 +5,12 @@
     <UserSecretsId>3f4d314d-f215-46af-89d8-0cc608d11409</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Repositories\UserRepository.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Repositories\UserRepository.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.OpenApi" Version="1.5.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.1" />
