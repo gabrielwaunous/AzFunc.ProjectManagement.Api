@@ -69,11 +69,41 @@ namespace PersonalProjects.Function
             return new CreatedResult($"/entities/{user.id}", user);
         }
 
+        [FunctionName("UpdateUser")]
+        [OpenApiOperation(operationId: "UpdateUser", tags: new[] { "Users" })]
+        [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(User), Description = "User to update", Required = true)]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NoContent, Description = "The entity was updated")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "User not found")]
+        public async Task<IActionResult> UpdateUser(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "users/{id}")] HttpRequest req,
+            int id
+        )
+        {
+            _logger.LogInformation($"Updating entity with id = {id}.");
+
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var user = JsonConvert.DeserializeObject<User>(requestBody);
+            if (user == null)
+            {
+                return new BadRequestResult();
+            }
+
+            var existingEntity = await _userService.GetEntityByIdAsync(id);
+            if (existingEntity == null)
+            {
+                return new NotFoundResult();
+            }
+
+            user.id = id;
+            await _userService.UpdateEntityAsync(user);
+            return new NoContentResult();
+        }
+
         [FunctionName("DeleteUser")]
         [OpenApiOperation(operationId: "DeleteUser", tags: new[] { "Users" })]
         [OpenApiParameter(name: "id", In = ParameterLocation.Path, Required = true, Type = typeof(int), Description = "ID of the user to delete")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NoContent, Description = "The user was deleted")]
-        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "Entity not found")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "User not found")]
         public async Task<IActionResult> DeleteUser(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "users/{id}")] HttpRequest req,
             int id

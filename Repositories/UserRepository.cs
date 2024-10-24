@@ -48,9 +48,19 @@ public class UserRepository : IUserRepository
         throw new System.NotImplementedException();
     }
 
-    public Task<User> UpdateAsync(User entity)
+    public async Task<User> UpdateAsync(User user)
     {
-        throw new System.NotImplementedException();
+        var query = @"
+            UPDATE Users 
+            SET Name = @Name, Email = @Email, Age = @Age 
+            WHERE Id = @Id
+        ";
+
+        var parameters = new { user.id, user.username, user.email, user.password };
+        
+        await _dbConnection.ExecuteAsync(query, parameters);
+        
+        return user;
     }
 }
 

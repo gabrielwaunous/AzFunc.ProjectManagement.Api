@@ -31,9 +31,9 @@ namespace PersonalProjects.Function.Services
             throw new System.NotImplementedException();
         }
 
-        public Task UpdateEntityAsync(User entity)
+        public async Task UpdateEntityAsync(User user)
         {
-            throw new System.NotImplementedException();
+            await _repository.UpdateAsync(user);
         }
     }
 }
