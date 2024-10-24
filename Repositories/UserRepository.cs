@@ -43,9 +43,11 @@ public class UserRepository : IUserRepository
         return users;
     }
 
-    public Task<User> GetByIdAsync(int id)
+    public async Task<User> GetByIdAsync(int id)
     {
-        throw new System.NotImplementedException();
+        var query = "SELECT * FROM Users WHERE id = @Id";
+        var result = await _dbConnection.QuerySingleOrDefaultAsync<User>(query, new {Id = id });
+        return result;
     }
 
     public Task<User> UpdateAsync(User entity)

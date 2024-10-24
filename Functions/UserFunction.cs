@@ -43,6 +43,27 @@ namespace PersonalProjects.Function
             return new OkObjectResult(entities);
         }
 
+        [FunctionName("GetUserById")]
+        [OpenApiOperation(operationId: "GetUserById", tags: new[] { "Users" })]
+        [OpenApiParameter(name: "id", In = ParameterLocation.Path, Required = true, Type = typeof(int), Description = "ID of the User")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(User), Description = "The user with the specified ID")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "User not found")]
+        public async Task<IActionResult> GetUserById(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "users/{id}")] HttpRequest req,
+            int id
+        )
+        {
+            _logger.LogInformation($"Fetching entity with id = {id}.");
+
+            var user = await _userService.GetEntityByIdAsync(id);
+            if(user == null)
+            {
+                return new NotFoundResult();
+            }
+
+            return new OkObjectResult(user);
+        }
+
         [FunctionName("CreateUser")]
         [OpenApiOperation(operationId: "CreateUser", tags: new[] { "Users" })]
         [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(User), Description = "User to create", Required = true)]
