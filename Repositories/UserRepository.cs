@@ -3,18 +3,30 @@ using System.Data;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 using PersonalProjects.Function.Repositories;
 public class UserRepository : IUserRepository
 {
     private readonly IDbConnection _dbConnection;
+    private readonly ILogger _logger;
 
-    public UserRepository(IDbConnection dbConnection)
+    public UserRepository(IDbConnection dbConnection, ILogger log)
     {
         _dbConnection = dbConnection;
+        _logger = log;
     }
-    public Task<User> CreateAsync(User entity)
+    public async Task<User> CreateAsync(User user)
     {
-        throw new System.NotImplementedException();
+        var query = @"
+        INSERT INTO Users (username, email, password)
+        VALUES (@username, @email, @password);
+        SELECT CAST(SCOPE_IDENTITY() AS int);
+    ";
+
+        var parameters = new { user.username, user.email, user.password };
+        user.id = await _dbConnection.QueryFirstOrDefaultAsync<int>(query, parameters);
+
+        return user;
     }
 
     public Task<bool> DeleteAsync(int id)

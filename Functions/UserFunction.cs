@@ -19,28 +19,54 @@ namespace PersonalProjects.Function
         private readonly ILogger<UserFunction> _logger;
         private readonly IUserService _userService;
 
-        public UserFunction(ILogger<UserFunction> log, IUserService user)
+        public UserFunction(ILogger<UserFunction> log, IUserService userService)
         {
             _logger = log;
-            _userService = user;
+            _userService = userService;
         }
 
-        [FunctionName("GetEntities")]
-        [OpenApiOperation(operationId: "GetEntities", tags: new[] { "Entities" })]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(IEnumerable<User>), Description = "List of entities")]
-        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "No entities found")]
+        [FunctionName("GetUsers")]
+        [OpenApiOperation(operationId: "GetUsers", tags: new[] { "Users" })]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(IEnumerable<User>), Description = "List of Users")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "No user found")]
         public async Task<IActionResult> GetEntities(
-                [HttpTrigger(AuthorizationLevel.Anonymous, "get" , Route = "entities")] HttpRequest req)
+                [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "users")] HttpRequest req)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
 
-                    var entities = await _userService.GetAllEntitiesAsync();
-        if (entities == null)
-        {
-            return new NotFoundResult();
+            var entities = await _userService.GetAllEntitiesAsync();
+            if (entities == null)
+            {
+                return new NotFoundResult();
+            }
+
+            return new OkObjectResult(entities);
         }
 
-        return new OkObjectResult(entities);
+        [FunctionName("CreateUser")]
+        [OpenApiOperation(operationId: "CreateUser", tags: new[] { "Users" })]
+        [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(User), Description = "User to create", Required = true)]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.Created, contentType: "application/json", bodyType: typeof(User), Description = "The created user")]
+        public async Task<IActionResult> CreateUser(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Users")] HttpRequest req
+        )
+        {
+            _logger.LogInformation("Creating a new entity.");
+
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var user = JsonConvert.DeserializeObject<User>(requestBody);
+
+            if (user == null)
+            {
+                return new BadRequestResult();
+            }
+
+            _logger.LogInformation("Received user: {@User}", user);
+             await _userService.CreateEntityAsync(user);
+            _logger.LogInformation("User created successfully with ID: {UserId}", user.id);
+
+            _logger.LogInformation($"Created a user: {user}.");
+            return new CreatedResult($"/entities/{user.id}", user);
         }
     }
 }

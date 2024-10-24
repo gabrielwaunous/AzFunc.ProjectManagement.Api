@@ -7,6 +7,8 @@ using PersonalProjects.Function.Services;
 using System.Data;
 using System.IO;
 
+
+[assembly: FunctionsStartup(typeof(PersonalProjects.Function.Startup))]
 namespace PersonalProjects.Function
 {
     public class Startup : FunctionsStartup
@@ -21,14 +23,14 @@ namespace PersonalProjects.Function
                 .Build();
 
             // Obtener la cadena de conexión de los secretos
-            string connectionString = configuration["ConnectionString"];
+            string connectionString = configuration["ConnectionString:DefaultConnection"];
             
              // Registrar la conexión a la base de datos (ejemplo con SQL Server)
             builder.Services.AddTransient<IDbConnection>((sp) => new SqlConnection(connectionString));
             
             // Registra el repositorio
             builder.Services.AddSingleton<IUserRepository,UserRepository>();            
-            builder.Services.AddSingleton<IUserService, UserService>();
+            builder.Services.AddSingleton<IUserService, UserService>();         
         }
     }
 }

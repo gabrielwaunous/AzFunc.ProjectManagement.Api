@@ -1,15 +1,19 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using PersonalProjects.Function.Repositories;
 
 namespace PersonalProjects.Function.Services
 {
-    public class UserService(IUserRepository repository) : IUserService
+    public class UserService(ILogger<UserService> log, IUserRepository repository) : IUserService
     {
+        private readonly ILogger<UserService> _logger = log;
         private readonly IUserRepository _repository = repository;
-        public Task CreateEntityAsync(User entity)
+        public Task CreateEntityAsync(User user)
         {
-            throw new System.NotImplementedException();
+            Console.WriteLine($"{user}");
+            return _repository.CreateAsync(user);
         }
 
         public Task DeleteEntityAsync(int id)
