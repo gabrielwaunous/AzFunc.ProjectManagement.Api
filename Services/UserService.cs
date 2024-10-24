@@ -31,9 +31,9 @@ namespace PersonalProjects.Function.Services
             return await _repository.GetByIdAsync(id);
         }
 
-        public Task UpdateEntityAsync(User entity)
+        public async Task UpdateEntityAsync(User user)
         {
-            throw new System.NotImplementedException();
+            await _repository.UpdateAsync(user);
         }
     }
 }
