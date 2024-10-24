@@ -54,7 +54,7 @@ public class UserRepository : IUserRepository
     {
         var query = @"
             UPDATE Users 
-            SET Name = @Name, Email = @Email, Age = @Age 
+            SET username = @username, email = @email, password = @password 
             WHERE Id = @Id
         ";
 
