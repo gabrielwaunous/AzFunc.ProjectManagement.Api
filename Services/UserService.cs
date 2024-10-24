@@ -16,9 +16,9 @@ namespace PersonalProjects.Function.Services
             return _repository.CreateAsync(user);
         }
 
-        public Task DeleteEntityAsync(int id)
+        public async Task DeleteEntityAsync(int id)
         {
-            throw new System.NotImplementedException();
+            await _repository.DeleteAsync(id);
         }
 
         public async Task<IEnumerable<User>> GetAllEntitiesAsync()

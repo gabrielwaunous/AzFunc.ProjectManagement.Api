@@ -62,11 +62,33 @@ namespace PersonalProjects.Function
             }
 
             _logger.LogInformation("Received user: {@User}", user);
-             await _userService.CreateEntityAsync(user);
+            await _userService.CreateEntityAsync(user);
             _logger.LogInformation("User created successfully with ID: {UserId}", user.id);
 
             _logger.LogInformation($"Created a user: {user}.");
             return new CreatedResult($"/entities/{user.id}", user);
+        }
+
+        [FunctionName("DeleteUser")]
+        [OpenApiOperation(operationId: "DeleteUser", tags: new[] { "Users" })]
+        [OpenApiParameter(name: "id", In = ParameterLocation.Path, Required = true, Type = typeof(int), Description = "ID of the user to delete")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NoContent, Description = "The user was deleted")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "Entity not found")]
+        public async Task<IActionResult> DeleteUser(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "users/{id}")] HttpRequest req,
+            int id
+        )
+        {
+            _logger.LogInformation($"Deleting entity with id = {id}.");
+
+            var existingEntity = await _userService.GetEntityByIdAsync(id);
+            if (existingEntity == null)
+            {
+                return new NotFoundResult();
+            }
+
+            await _userService.DeleteEntityAsync(id);
+            return new NoContentResult();
         }
     }
 }

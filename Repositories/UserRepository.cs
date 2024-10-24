@@ -29,9 +29,11 @@ public class UserRepository : IUserRepository
         return user;
     }
 
-    public Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
-        throw new System.NotImplementedException();
+        var query = "DELETE FROM Users WHERE id = @Id";
+        var result = await _dbConnection.ExecuteAsync(query, new { id = id });
+        return result > 0;
     }
 
     public async Task<IEnumerable<User>> GetAllAsync()
