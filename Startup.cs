@@ -28,9 +28,13 @@ namespace PersonalProjects.Function
              // Registrar la conexión a la base de datos (ejemplo con SQL Server)
             builder.Services.AddTransient<IDbConnection>((sp) => new SqlConnection(connectionString));
             
-            // Registra el repositorio
-            builder.Services.AddSingleton<IUserRepository,UserRepository>();            
+            // Registra los repositorios
+            builder.Services.AddSingleton<IUserRepository,UserRepository>();
+            builder.Services.AddSingleton<IProjectRepository,ProjectRepository>();
+
+            // Registra los Servicios
             builder.Services.AddSingleton<IUserService, UserService>();         
+            builder.Services.AddSingleton<IProjectService, ProjectService>();         
         }
     }
 }

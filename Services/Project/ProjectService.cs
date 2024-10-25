@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-class ProjectService : IProjectService
+public class ProjectService(IProjectRepository repository) : IProjectService
 {
+    private readonly IProjectRepository _projectRepository  =  repository;
     public Task<Project> CreateProjectAsync(Project project)
     {
         throw new System.NotImplementedException();
@@ -15,7 +16,7 @@ class ProjectService : IProjectService
 
     public Task<IEnumerable<Project>> GetAllProjectsByUserAsync(int userId)
     {
-        throw new System.NotImplementedException();
+        return _projectRepository.GetAllProjectsByUserAsync(userId);
     }
 
     public Task<Project> GetProjectByIdAsync(int id)
