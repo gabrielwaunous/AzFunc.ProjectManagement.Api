@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-interface IProjectService
+public interface IProjectService
 {
     Task<IEnumerable<Project>> GetAllProjectsByUserAsync(int userId);
     Task<Project> GetProjectByIdAsync(int id);
