@@ -21,7 +21,7 @@ public class ProjectService(IProjectRepository repository) : IProjectService
 
     public Task<Project> GetProjectByIdAsync(int id)
     {
-        throw new System.NotImplementedException();
+        return _projectRepository.GetProjectByIdAsync(id);
     }
 
     public Task<Project> UpdateProjectAsync(Project project)
