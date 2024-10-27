@@ -47,6 +47,28 @@ namespace PersonalProjects.Function
             _logger.LogInformation($"Retrieved {projects.Count()} projects for user ID {userId}.");
             return new OkObjectResult(projects);
         }
+
+        [FunctionName("GetProjectById")]
+        [OpenApiOperation(operationId: "GetProjectById", tags: new[] { "Projects" })]
+        [OpenApiParameter(name: "projectId", In = ParameterLocation.Path, Required = true, Type = typeof(long), Description = "ID of the Project")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(Project), Description = "The projects for the specified id")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "No projects found for the specified id")]
+        public async Task<IActionResult> GetProjectById(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "project/{projectId}")] HttpRequest req,
+            int projectId
+        )
+        {
+            var project = await _projectService.GetProjectByIdAsync(projectId);
+
+            if(project == null)
+            {
+                _logger.LogInformation($"No project was found!");
+                return new NotFoundResult();
+            }
+
+            return new OkObjectResult(project);
+
+        }
     }
 }
 

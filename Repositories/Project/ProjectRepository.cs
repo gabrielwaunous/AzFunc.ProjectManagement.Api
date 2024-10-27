@@ -36,9 +36,17 @@ public class ProjectRepository : IProjectRepository
         }
     }
 
-    public Task<Project> GetProjectByIdAsync(int id)
+    public async Task<Project> GetProjectByIdAsync(int id)
     {
-        throw new System.NotImplementedException();
+        try
+        {
+            var query = @"SELECT * FROM Projects WHERE id = @id";
+            var project = await _dbConnection.QueryFirstOrDefaultAsync<Project>(query, new { id = id });
+            return project;
+        }catch(Exception ex)
+        {
+            throw new Exception("Error retrieving projects.", ex);
+        }
     }
 
     public Task<int> UpdateProjectAsync(Project project)
