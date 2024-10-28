@@ -50,9 +50,11 @@ public class ProjectRepository : IProjectRepository
         return projectId;
     }
 
-    public Task<int> DeleteProjectAsync(long id)
+    public async Task<bool> DeleteProjectAsync(int id)
     {
-        throw new System.NotImplementedException();
+        var query = "DELETE FROM Projects WHERE id = @Id";
+        var result = await _dbConnection.ExecuteAsync(query, new { id = id });
+        return result > 0;
     }
 
 

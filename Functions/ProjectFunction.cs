@@ -60,7 +60,7 @@ namespace PersonalProjects.Function
         {
             var project = await _projectService.GetProjectByIdAsync(projectId);
 
-            if(project == null)
+            if (project == null)
             {
                 _logger.LogInformation($"No project was found!");
                 return new NotFoundResult();
@@ -71,10 +71,10 @@ namespace PersonalProjects.Function
         }
 
         [FunctionName("CreateProject")]
-        [OpenApiOperation(operationId: "CreateProject", tags: new[] { "Projects"})]
+        [OpenApiOperation(operationId: "CreateProject", tags: new[] { "Projects" })]
         [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(Project), Description = "Project to create", Required = true)]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.Created, contentType: "application/json", bodyType: typeof(Project), Description = "The project user")]
-        [OpenApiResponseWithoutBody(statusCode:HttpStatusCode.NotFound, Description = "No project was created")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "No project was created")]
         public async Task<IActionResult> CreateProject(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Projects")] HttpRequest req
         )
@@ -84,20 +84,41 @@ namespace PersonalProjects.Function
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var project = JsonConvert.DeserializeObject<Project>(requestBody);
 
-            if(project == null)
+            if (project == null)
             {
                 return new BadRequestResult();
             }
 
             await _projectService.CreateProjectAsync(project);
-             _logger.LogInformation("Project created successfully with ID: {ProjectId}", project.id);
-             
-             var sanitizedProject = project.ToString().Replace(Environment.NewLine, " ").Replace("\n", " ").Replace("\r", " ");
+            _logger.LogInformation("Project created successfully with ID: {ProjectId}", project.id);
+
+            var sanitizedProject = project.ToString().Replace(Environment.NewLine, " ").Replace("\n", " ").Replace("\r", " ");
             _logger.LogInformation($"Created a project: {sanitizedProject}.");
-            
+
             return new CreatedResult($"/entities/{project.id}", project);
         }
 
+        [FunctionName("DeleteProject")]
+        [OpenApiOperation(operationId: "DeleteProject", tags: new[] { "Projects" })]
+        [OpenApiParameter(name: "projectId", In = ParameterLocation.Path, Required = true, Type = typeof(int), Description = "ID of the project to delete")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NoContent, Description = "The project was deleted")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "Project not found")]
+        public async Task<IActionResult> DeleteProject(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "project/{projectId}")] HttpRequest req,
+            int projectId
+        )
+        {
+            _logger.LogInformation($"Deleting entity with id = {projectId}.");
+
+            var existingProject = await _projectService.GetProjectByIdAsync(projectId);
+            if (existingProject == null)
+            {
+                return new NotFoundResult();
+            }
+
+            await _projectService.DeleteProjectAsync(projectId);
+            return new NoContentResult();
+        }
     }
 }
 

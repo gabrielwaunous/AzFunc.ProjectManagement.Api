@@ -21,9 +21,9 @@ public class ProjectService(IProjectRepository repository) : IProjectService
 
     }
 
-    public Task<bool> DeleteProjectAsync(int id)
+    public async Task<bool> DeleteProjectAsync(int id)
     {
-        throw new System.NotImplementedException();
+        return await _projectRepository.DeleteProjectAsync(id);
     }
 
 
