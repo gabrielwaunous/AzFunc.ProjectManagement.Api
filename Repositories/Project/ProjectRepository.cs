@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
 using Dapper;
 
@@ -12,16 +13,6 @@ public class ProjectRepository : IProjectRepository
     {
         _dbConnection = dbConnection;
     }
-    public Task<int> CreateProjectAsync(Project project)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public Task<int> DeleteProjectAsync(long id)
-    {
-        throw new System.NotImplementedException();
-    }
-
     public async Task<IEnumerable<Project>> GetAllProjectsByUserAsync(int userId)
     {
         try
@@ -48,6 +39,22 @@ public class ProjectRepository : IProjectRepository
             throw new Exception("Error retrieving projects.", ex);
         }
     }
+    public async Task<int> CreateProjectAsync(Project project)
+    {
+        var query = @"INSERT INTO Projects(user_id,name, description)
+                    VALUES(@user_id,@name,@description);
+                    SELECT CAST(SCOPE_IDENTITY() AS int);
+        ";
+        var parameters = new { project.user_id, project.name, project.description};
+        var projectId = await _dbConnection.QueryFirstOrDefaultAsync<int>(query,parameters);
+        return projectId;
+    }
+
+    public Task<int> DeleteProjectAsync(long id)
+    {
+        throw new System.NotImplementedException();
+    }
+
 
     public Task<int> UpdateProjectAsync(Project project)
     {

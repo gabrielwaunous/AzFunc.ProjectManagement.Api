@@ -69,6 +69,34 @@ namespace PersonalProjects.Function
             return new OkObjectResult(project);
 
         }
+
+        [FunctionName("CreateProject")]
+        [OpenApiOperation(operationId: "CreateProject", tags: new[] { "Projects"})]
+        [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(Project), Description = "Project to create", Required = true)]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.Created, contentType: "application/json", bodyType: typeof(Project), Description = "The project user")]
+        [OpenApiResponseWithoutBody(statusCode:HttpStatusCode.NotFound, Description = "No project was created")]
+        public async Task<IActionResult> CreateProject(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Projects")] HttpRequest req
+        )
+        {
+            _logger.LogInformation($"Creating new Project...");
+
+            var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var project = JsonConvert.DeserializeObject<Project>(requestBody);
+
+            if(project == null)
+            {
+                return new BadRequestResult();
+            }
+
+            _logger.LogInformation($"Received Project: {project}");
+            var result = await _projectService.CreateProjectAsync(project);
+             _logger.LogInformation("Project created successfully with ID: {ProjectId}", project.id);
+
+            _logger.LogInformation($"Created a project: {project}.");
+            return new CreatedResult($"/entities/{project.id}", project);
+        }
+
     }
 }
 
