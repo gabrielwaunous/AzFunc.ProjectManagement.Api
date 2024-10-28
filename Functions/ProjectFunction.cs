@@ -89,7 +89,6 @@ namespace PersonalProjects.Function
                 return new BadRequestResult();
             }
 
-            _logger.LogInformation($"Received Project: {project}");
             var result = await _projectService.CreateProjectAsync(project);
              _logger.LogInformation("Project created successfully with ID: {ProjectId}", project.id);
 
