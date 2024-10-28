@@ -92,7 +92,6 @@ namespace PersonalProjects.Function
             var result = await _projectService.CreateProjectAsync(project);
              _logger.LogInformation("Project created successfully with ID: {ProjectId}", project.id);
 
-            _logger.LogInformation($"Created a project: {project}.");
             return new CreatedResult($"/entities/{project.id}", project);
         }
 
