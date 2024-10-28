@@ -89,9 +89,12 @@ namespace PersonalProjects.Function
                 return new BadRequestResult();
             }
 
-            var result = await _projectService.CreateProjectAsync(project);
+            await _projectService.CreateProjectAsync(project);
              _logger.LogInformation("Project created successfully with ID: {ProjectId}", project.id);
-
+             
+             var sanitizedProject = project.ToString().Replace(Environment.NewLine, " ").Replace("\n", " ").Replace("\r", " ");
+            _logger.LogInformation($"Created a project: {sanitizedProject}.");
+            
             return new CreatedResult($"/entities/{project.id}", project);
         }
 
