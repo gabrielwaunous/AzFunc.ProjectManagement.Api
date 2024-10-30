@@ -100,7 +100,7 @@ namespace PersonalProjects.Function
             int id
         )
         {
-            _logger.LogInformation($"Updating entity with id = {id}.");
+            _logger.LogInformation($"Updating user with id = {id}.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var user = JsonConvert.DeserializeObject<User>(requestBody);
