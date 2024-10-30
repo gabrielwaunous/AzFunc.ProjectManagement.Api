@@ -58,8 +58,19 @@ public class ProjectRepository : IProjectRepository
     }
 
 
-    public Task<int> UpdateProjectAsync(Project project)
+    public async Task<Project> UpdateProjectAsync(Project project)
     {
-        throw new System.NotImplementedException();
+        var updateQuery = @"
+            UPDATE Projects
+                SET user_id = @user_id,name = @name,description = @description
+            WHERE Id = @Id
+        ";
+
+        var parameters = new { project.id, project.user_id, project.name, project.description};
+
+        await _dbConnection.ExecuteAsync(updateQuery, parameters);
+
+        return project;
+
     }
 }

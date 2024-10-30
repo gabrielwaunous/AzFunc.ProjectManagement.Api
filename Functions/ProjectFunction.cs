@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using System.Linq;
+using Microsoft.CodeAnalysis;
 
 
 namespace PersonalProjects.Function
@@ -96,6 +97,36 @@ namespace PersonalProjects.Function
             _logger.LogInformation($"Created a project: {sanitizedProject}.");
 
             return new CreatedResult($"/entities/{project.id}", project);
+        }
+
+        [FunctionName("UpdateProject")]
+        [OpenApiOperation(operationId:"UpdateProject", tags: new[] { "Projects" })]
+        [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(Project), Description = "Project to update", Required = true)]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NoContent, Description = "The project was updated")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "Project not found")]
+        public async Task<IActionResult> UpdateProject(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "project")] HttpRequest req
+        )
+        {            
+
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var project = JsonConvert.DeserializeObject<Project>(requestBody);
+            if (project == null)
+            {
+                return new BadRequestResult();
+            }
+            
+            _logger.LogInformation($"Updating project with id = {project.id}.");
+
+            var existingProject = await _projectService.GetProjectByIdAsync(project.id);
+            if(existingProject == null)
+            {
+                return new NotFoundResult();
+            }
+
+            await _projectService.UpdateProjectAsync(project);
+            return new NoContentResult();
+
         }
 
         [FunctionName("DeleteProject")]
