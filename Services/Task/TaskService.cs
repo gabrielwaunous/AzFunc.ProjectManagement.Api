@@ -6,9 +6,9 @@ public class TaskService(ITasksRepository repo) : ITaskService
 {
     private readonly ITasksRepository _taskRepository = repo;
 
-    public Task<IEnumerable<TaskModel>> GetAllTasksByProjectAsync(int projectId)
+    public async Task<IEnumerable<TaskModel>> GetAllTasksByProjectAsync(int projectId)
     {
-        throw new System.NotImplementedException();
+        return await _taskRepository.GetAllTasksByProjectAsync(projectId);
     }
 
     public Task<TaskModel> GetProjectByIdAsync(int id)

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PersonalProjects.Function.Repositories;
 using PersonalProjects.Function.Services;
+using PersonalProjects.Function.Tasks;
 using System.Data;
 using System.IO;
 
@@ -31,10 +32,12 @@ namespace PersonalProjects.Function
             // Registra los repositorios
             builder.Services.AddSingleton<IUserRepository,UserRepository>();
             builder.Services.AddSingleton<IProjectRepository,ProjectRepository>();
+            builder.Services.AddSingleton<ITasksRepository,TasksRepository>();
 
             // Registra los Servicios
             builder.Services.AddSingleton<IUserService, UserService>();         
             builder.Services.AddSingleton<IProjectService, ProjectService>();         
+            builder.Services.AddSingleton<ITaskService, TaskService>();
         }
     }
 }
