@@ -69,6 +69,35 @@ namespace PersonalProjects.Function
 
             return new OkObjectResult(task);
         }
+
+        [FunctionName("CreateTask")]
+        [OpenApiOperation(operationId: "CreateTask", tags: new[] { "Tasks"})]
+        [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(TaskModel), Description = "The Task to create", Required = true )]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.Created, contentType: "application/json", bodyType: typeof(TaskModel), Description = "The created Task")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "No Task was created")]
+        public async Task<IActionResult> CreateTask(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Tasks")] HttpRequest req
+        )
+        {
+            _logger.LogInformation("Creating new task...");
+
+            var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var task = JsonConvert.DeserializeObject<TaskModel>(requestBody);
+
+            if(task == null)
+            {
+                return new BadRequestResult();
+            }
+
+            var taskId = await _taskService.CreateTaskAsync(task);
+            
+            _logger.LogInformation("Project created successfully with ID: {ProjectId}", taskId);
+
+            var sanitizedProject = task.ToString().Replace(Environment.NewLine, " ").Replace("\n", " ").Replace("\r", " ");
+            _logger.LogInformation($"Created a task: {sanitizedProject}.");
+
+            return new CreatedResult($"/task/{taskId}", task);
+        }
     }
 }
 
