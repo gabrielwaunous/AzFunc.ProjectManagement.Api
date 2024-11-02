@@ -11,9 +11,9 @@ public class TaskService(ITasksRepository repo) : ITaskService
         return await _taskRepository.GetAllTasksByProjectAsync(projectId);
     }
 
-    public Task<TaskModel> GetProjectByIdAsync(int id)
+    public async Task<TaskModel> GetTaskByIdAsync(int id)
     {
-        throw new System.NotImplementedException();
+        return await _taskRepository.GetTaskByIdAsync(id);
     }
     public Task<TaskModel> CreateTaskAsync(TaskModel task)
     {
