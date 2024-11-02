@@ -24,9 +24,9 @@ public class TaskService(ITasksRepository repo) : ITaskService
     {
         return await _taskRepository.UpdateTaskAsync(task);
     }
-    public Task<bool> DeleteTaskAsync(int id)
+    public async Task<bool> DeleteTaskAsync(int id)
     {
-        throw new System.NotImplementedException();
+        return await _taskRepository.DeleteTaskAsync(id);
     }
 
 
