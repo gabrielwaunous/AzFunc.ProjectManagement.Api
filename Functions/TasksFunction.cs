@@ -27,11 +27,11 @@ namespace PersonalProjects.Function
         }
 
         [FunctionName("GetAllTasksByProject")]
-        [OpenApiOperation(operationId: "GetAllTasksByProject", tags: new[] { "Taks" })]
+        [OpenApiOperation(operationId: "GetAllTasksByProject", tags: new[] { "Tasks" })]
         [OpenApiParameter(name: "projectId", In = ParameterLocation.Path, Required = true, Type = typeof(int), Description = "ID of the Project")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "text/plain", bodyType: typeof(IEnumerable<TaskModel>), Description = "The list of task for the specified project")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "No tasks found for the specified project")]
-        public async Task<IActionResult> Run(
+        public async Task<IActionResult> GetAllTasksByProject(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "projects/{projectId}/tasks")] HttpRequest req,
             int projectId
             )
@@ -47,6 +47,27 @@ namespace PersonalProjects.Function
             _logger.LogInformation($"Retrieved {tasks.Count()} projects for user ID {projectId}.");
             return new OkObjectResult(tasks);
 
+        }
+
+        [FunctionName("GetTaskById")]
+        [OpenApiOperation(operationId: "GetTaskById", tags: new[] { "Tasks"})]
+        [OpenApiParameter(name: "taskId", In = ParameterLocation.Path, Required = true, Type = typeof(int), Description = "ID of the Task")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "text/plain", bodyType: typeof(TaskModel), Description = "the Task of specified Id")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "No tasks found for the specified id")]
+        public async Task<IActionResult> GetTaskById(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "tasks/{taskId}")] HttpRequest req,
+            int taskId
+        )
+        {
+            var task = await _taskService.GetTaskByIdAsync(taskId);
+            
+            if(task == null)
+            {
+                _logger.LogInformation($"No task was found!");
+                return new NotFoundResult();
+            }
+
+            return new OkObjectResult(task);
         }
     }
 }

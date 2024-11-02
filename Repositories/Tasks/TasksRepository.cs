@@ -12,19 +12,28 @@ public class TasksRepository(IDbConnection dbConnection) : ITasksRepository
     {
         try
         {
-            var query = "SELECT * FROM Tasks WHERE project_id = @projectId"; 
-            var tasks = await _dbConnection.QueryAsync<TaskModel>(query, new { projectId = projectId }); 
+            var query = "SELECT * FROM Tasks WHERE project_id = @projectId";
+            var tasks = await _dbConnection.QueryAsync<TaskModel>(query, new { projectId = projectId });
             return tasks;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            throw new Exception("Error retrieving projects.", ex);
+            throw new Exception("Error retrieving Tasks.", ex);
         }
     }
 
-    public Task<TaskModel> GetTaskByIdAsync(int id)
+    public async Task<TaskModel> GetTaskByIdAsync(int id)
     {
-        throw new System.NotImplementedException();
+        try
+        {
+            var query = "SELECT * FROM tasks WHERE id = @id";
+            var task = await _dbConnection.QueryFirstOrDefaultAsync<TaskModel>(query, new { id = id });
+            return task;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error retrieving Task.", ex);
+        }
     }
     public Task<int> CreateTaskAsync(TaskModel task)
     {
