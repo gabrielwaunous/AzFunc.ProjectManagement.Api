@@ -8,7 +8,7 @@ namespace PersonalProjects.Function.Tasks
         public Task<IEnumerable<TaskModel>> GetAllTasksByProjectAsync(int userId);
         public Task<TaskModel> GetTaskByIdAsync(int id);
         public Task<int> CreateTaskAsync(TaskModel task);
-        public Task<Project> UpdateTaskAsync(TaskModel task);
+        public Task<TaskModel> UpdateTaskAsync(TaskModel task);
         public Task<bool> DeleteTaskAsync(int id);
     }
 }
