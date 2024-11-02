@@ -35,9 +35,16 @@ public class TasksRepository(IDbConnection dbConnection) : ITasksRepository
             throw new Exception("Error retrieving Task.", ex);
         }
     }
-    public Task<int> CreateTaskAsync(TaskModel task)
+    public async Task<int> CreateTaskAsync(TaskModel task)
     {
-        throw new System.NotImplementedException();
+        var insertQuery = @"
+                INSERT INTO .[dbo].[TASKS] (project_id, name, due_date, priority, status)
+                VALUES (@project_id, @name, @due_date, @priority, @status);
+                SELECT CAST(SCOPE_IDENTITY() AS int);
+            ";
+        var parameters = new { task.project_id, task.name, task.due_date, task.priority, task.status };
+        var tasksId = await _dbConnection.QueryFirstOrDefaultAsync<int>(insertQuery, parameters);
+        return tasksId;
     }
 
     public Task<Project> UpdateTaskAsync(TaskModel task)

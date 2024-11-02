@@ -74,7 +74,7 @@ namespace PersonalProjects.Function
         [FunctionName("CreateProject")]
         [OpenApiOperation(operationId: "CreateProject", tags: new[] { "Projects" })]
         [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(Project), Description = "Project to create", Required = true)]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.Created, contentType: "application/json", bodyType: typeof(Project), Description = "The project user")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.Created, contentType: "application/json", bodyType: typeof(Project), Description = "The created project")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "No project was created")]
         public async Task<IActionResult> CreateProject(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Projects")] HttpRequest req
