@@ -71,6 +71,5 @@ public class ProjectRepository : IProjectRepository
         await _dbConnection.ExecuteAsync(updateQuery, parameters);
 
         return project;
-
     }
 }

@@ -62,8 +62,14 @@ public class TasksRepository(IDbConnection dbConnection) : ITasksRepository
 
         return task;
     }
-    public Task<bool> DeleteTaskAsync(int id)
+    public async Task<bool> DeleteTaskAsync(int id)
     {
-        throw new System.NotImplementedException();
+        var deleteQuery = @"
+            DELETE FROM [dbo].[TASKS] WHERE id = @id
+        ";
+
+        var result = await _dbConnection.ExecuteAsync(deleteQuery, new { id = id });
+        
+        return result > 0;
     }
 }

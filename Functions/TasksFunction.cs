@@ -120,7 +120,26 @@ namespace PersonalProjects.Function
             await _taskService.UpdateTaskAsync(task);
 
             return new NoContentResult();
+        }
 
+        [FunctionName("DeleteTask")]
+        [OpenApiOperation(operationId:"DeleteTask", tags: new[] {"Tasks"})]
+        [OpenApiParameter(name: "taskId", In = ParameterLocation.Path, Required = true, Type = typeof(int), Description = "ID of the Task")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NoContent, Description = "The Task was deleted")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "Task not found")]
+        public async Task<IActionResult> DeleteTask(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Tasks/{taskId}")] HttpRequest req,
+            int taskId
+        )
+        {
+            _logger.LogInformation($"Deleting Task with id = {taskId}.");
+
+            var existingTask = await _taskService.GetTaskByIdAsync(taskId);
+            
+            if(existingTask == null) return new NotFoundResult();
+
+            await _taskService.DeleteTaskAsync(existingTask.id);
+            return new NoContentResult();
         }
     }
 }
