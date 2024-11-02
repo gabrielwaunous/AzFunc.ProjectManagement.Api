@@ -20,14 +20,14 @@ public class TaskService(ITasksRepository repo) : ITaskService
         return await _taskRepository.CreateTaskAsync(task);
     }
 
+    public async Task<TaskModel> UpdateTaskAsync(TaskModel task)
+    {
+        return await _taskRepository.UpdateTaskAsync(task);
+    }
     public Task<bool> DeleteTaskAsync(int id)
     {
         throw new System.NotImplementedException();
     }
 
 
-    public Task<TaskModel> UpdateTaskAsync(TaskModel task)
-    {
-        throw new System.NotImplementedException();
-    }
 }

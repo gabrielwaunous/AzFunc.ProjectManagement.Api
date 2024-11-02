@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
+using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Extensions;
 using PersonalProjects.Function.Tasks;
 
 public class TasksRepository(IDbConnection dbConnection) : ITasksRepository
@@ -38,7 +39,7 @@ public class TasksRepository(IDbConnection dbConnection) : ITasksRepository
     public async Task<int> CreateTaskAsync(TaskModel task)
     {
         var insertQuery = @"
-                INSERT INTO .[dbo].[TASKS] (project_id, name, due_date, priority, status)
+                INSERT INTO [dbo].[TASKS] (project_id, name, due_date, priority, status)
                 VALUES (@project_id, @name, @due_date, @priority, @status);
                 SELECT CAST(SCOPE_IDENTITY() AS int);
             ";
@@ -47,9 +48,19 @@ public class TasksRepository(IDbConnection dbConnection) : ITasksRepository
         return tasksId;
     }
 
-    public Task<Project> UpdateTaskAsync(TaskModel task)
+    public async Task<TaskModel> UpdateTaskAsync(TaskModel task)
     {
-        throw new System.NotImplementedException();
+        var updateQuery = @"
+            UPDATE [dbo].[TASKS]
+                SET project_id = @project_id, name = @name, due_date = @due_date, priority = @priority, status = @status
+            WHERE id = @id
+        ";
+
+        var parameters = new {task.id, task.project_id ,task.name, task.due_date, task.priority, task.status };
+
+        await _dbConnection.ExecuteAsync(updateQuery, parameters);
+
+        return task;
     }
     public Task<bool> DeleteTaskAsync(int id)
     {
