@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public class ActivityService : IActivityService
+public class ActivityService (IActivityRepository activityRepository) : IActivityService
 {
-    public Task<int> CreateActivityAsync(Activity activity)
-    {
-        throw new System.NotImplementedException();
-    }
+    private readonly IActivityRepository _activityRepository = activityRepository;
+    public async Task<int> CreateActivityAsync(Activity activity)
+        => await _activityRepository.CreateActivityAsync(activity);    
 
     public Task<bool> DeleteActivityAsync(int id)
     {
