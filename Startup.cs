@@ -33,11 +33,12 @@ namespace PersonalProjects.Function
             builder.Services.AddSingleton<IUserRepository,UserRepository>();
             builder.Services.AddSingleton<IProjectRepository,ProjectRepository>();
             builder.Services.AddSingleton<ITasksRepository,TasksRepository>();
+            builder.Services.AddSingleton<IActivityRepository,ActivityRepository>();
 
             // Registra los Servicios
             builder.Services.AddSingleton<IUserService, UserService>();         
             builder.Services.AddSingleton<IProjectService, ProjectService>();         
-            builder.Services.AddSingleton<ITaskService, TaskService>();
+            builder.Services.AddSingleton<IActivityService, ActivityService>();
         }
     }
 }

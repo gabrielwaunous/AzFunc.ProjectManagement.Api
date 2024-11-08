@@ -16,10 +16,12 @@ namespace PersonalProjects.Function
     public class ActivityFunction
     {
         private readonly ILogger<ActivityFunction> _logger;
+        private readonly IActivityService _activityService;
 
-        public ActivityFunction(ILogger<ActivityFunction> log)
+        public ActivityFunction(ILogger<ActivityFunction> log, IActivityService service)
         {
             _logger = log;
+            _activityService = service;
         }
 
         [FunctionName("ActivityFunction")]
@@ -30,6 +32,33 @@ namespace PersonalProjects.Function
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req)
         {
             throw new NotImplementedException();
+        }
+
+        [FunctionName("CreateActivity")]
+        [OpenApiOperation(operationId: "CreateActivity", tags: new[] { "Activities" })]
+        [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(Activity), Description = "Activity to Create", Required = true )]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.Created, contentType: "application/json", bodyType: typeof(Activity), Description = "Created Activity")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "No Activity was created")]
+        public async Task<IActionResult> CreateActivity (
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Activity")] HttpRequest req            
+        )
+        {
+            _logger.LogInformation($"Creating new Activity...");
+
+            var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var activity = JsonConvert.DeserializeObject<Activity>(requestBody);
+
+            if (activity == null)
+            {
+                return new BadRequestResult();
+            }
+
+            await _activityService.CreateActivityAsync(activity);            
+
+            var sanitizedActivity = activity.ToString().Replace(Environment.NewLine, " ").Replace("\n", " ").Replace("\r", " ");
+            _logger.LogInformation($"Created a Activity: {sanitizedActivity}.");
+
+            return new CreatedResult($"/activity/{activity.id}", sanitizedActivity);
         }
     }
 }
