@@ -7,15 +7,9 @@ public class ActivityService (IActivityRepository activityRepository) : IActivit
     public async Task<int> CreateActivityAsync(Activity activity)
         => await _activityRepository.CreateActivityAsync(activity);    
 
-    public Task<bool> DeleteActivityAsync(int id)
-    {
-        throw new System.NotImplementedException();
-    }
 
-    public Task<Activity> GetActivityByIdAsync(int id)
-    {
-        throw new System.NotImplementedException();
-    }
+    public async Task<Activity> GetActivityByIdAsync(int id)
+     => await _activityRepository.GetActivityByIdAsync(id);
 
     public Task<IEnumerable<Activity>> GetAllActivitiesByProjectAsync(int projectId)
     {
@@ -28,6 +22,10 @@ public class ActivityService (IActivityRepository activityRepository) : IActivit
     }
 
     public Task<Activity> UpdateActivityAsync(Activity activity)
+    {
+        throw new System.NotImplementedException();
+    }
+    public Task<bool> DeleteActivityAsync(int id)
     {
         throw new System.NotImplementedException();
     }
