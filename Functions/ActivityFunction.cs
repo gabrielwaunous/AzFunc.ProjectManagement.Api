@@ -24,14 +24,23 @@ namespace PersonalProjects.Function
             _activityService = service;
         }
 
-        [FunctionName("ActivityFunction")]
-        [OpenApiOperation(operationId: "Run", tags: new[] { "name" })]
-        [OpenApiParameter(name: "name", In = ParameterLocation.Query, Required = true, Type = typeof(string), Description = "The **Name** parameter")]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "text/plain", bodyType: typeof(string), Description = "The OK response")]
-        public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req)
+        [FunctionName("GetActivityById")]
+        [OpenApiOperation(operationId: "GetActivityById", tags: new[] { "Activities" })]
+        [OpenApiParameter(name: "id", In = ParameterLocation.Path, Required = true, Type = typeof(int), Description = "The Activity Id")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(Activity), Description = "The Activity Requested")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "No Activity was not found for the specified id")]
+        public async Task<IActionResult> GetActivityById(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "activity/{id}")] HttpRequest req,
+            int id
+            )
         {
-            throw new NotImplementedException();
+            _logger.LogInformation($"Searching Activity with id: {id}");
+            
+            var activity = await _activityService.GetActivityByIdAsync(id);
+
+            if(activity == null ) return new NotFoundResult();
+
+            return new OkObjectResult(activity);
         }
 
         [FunctionName("CreateActivity")]

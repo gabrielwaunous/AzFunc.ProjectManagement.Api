@@ -12,9 +12,20 @@ public class ActivityRepository : IActivityRepository
         _dbConnection = dbConnection;
     }
 
-    public Task<Activity> GetActivityByIdAsync(int id)
+    public async Task<Activity> GetActivityByIdAsync(int id)
     {
-        throw new System.NotImplementedException();
+        var query = @"
+            SELECT [id]
+                ,[project_id]
+                ,[user_id]
+                ,[activity_type]
+                ,[description]
+            FROM [ProjectManagementDB].[dbo].[ACTIVITIES]
+            WHERE [id] = @id
+        ";
+
+        var activity = await _dbConnection.QueryFirstOrDefaultAsync<Activity>(query, new { id });
+        return activity;
     }
 
     public Task<IEnumerable<Activity>> GetActivityByProjectAsync(int projectId)
