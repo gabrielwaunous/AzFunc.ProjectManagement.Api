@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -41,6 +42,23 @@ namespace PersonalProjects.Function
             if(activity == null ) return new NotFoundResult();
 
             return new OkObjectResult(activity);
+        }
+
+        [FunctionName("GetAllActivitiesByProject")]
+        [OpenApiOperation(operationId: "GetAllActivitiesByProject", tags: new[]{"Activities"})]
+        [OpenApiParameter(name: "projectId", In = ParameterLocation.Path, Required = true, Type = typeof(int), Description = "The Project id of activities")]
+        [OpenApiResponseWithBody(statusCode:HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(Activity), Description = "The Activity list for specified project Id")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "No activities found for specified project id")]
+        public async Task<IActionResult> GetAllActivitiesByProject(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "project/{projectId}/activities")] HttpRequest req,
+            int projectId
+        )
+        {
+            var activityList = await _activityService.GetAllActivitiesByProjectAsync(projectId);
+            
+            if(!activityList.Any()) return new NotFoundResult();
+
+            return new OkObjectResult(activityList);
         }
 
         [FunctionName("CreateActivity")]
