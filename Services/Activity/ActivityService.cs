@@ -11,10 +11,8 @@ public class ActivityService (IActivityRepository activityRepository) : IActivit
     public async Task<Activity> GetActivityByIdAsync(int id)
      => await _activityRepository.GetActivityByIdAsync(id);
 
-    public Task<IEnumerable<Activity>> GetAllActivitiesByProjectAsync(int projectId)
-    {
-        throw new System.NotImplementedException();
-    }
+    public async Task<IEnumerable<Activity>> GetAllActivitiesByProjectAsync(int projectId)
+     => await _activityRepository.GetActivityByProjectAsync(projectId);
 
     public Task<IEnumerable<Activity>> GetAllActivitiesByUserAsync(int userId)
     {
