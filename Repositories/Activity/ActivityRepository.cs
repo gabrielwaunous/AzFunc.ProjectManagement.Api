@@ -36,18 +36,28 @@ public class ActivityRepository : IActivityRepository
                 ,[user_id]
                 ,[activity_type]
                 ,[description]
-            FROM [ProjectManagementDB].[dbo].[ACTIVITIES]
+            FROM [dbo].[ACTIVITIES]
             WHERE [project_id] = @projectId
         ";
 
         var activityList = await _dbConnection.QueryAsync<Activity>(query, new { projectId });
         return activityList;
-
     }
 
-    public Task<IEnumerable<Activity>> GetActivityByUserAsync(int userId)
+    public async Task<IEnumerable<Activity>> GetActivityByUserAsync(int userId)
     {
-        throw new System.NotImplementedException();
+        var query = @"
+            SELECT [id]
+                ,[project_id]
+                ,[user_id]
+                ,[activity_type]
+                ,[description]
+            FROM [dbo].[ACTIVITIES]
+            WHERE [user_id] = @userId
+        ";
+
+        var activityList = await _dbConnection.QueryAsync<Activity>(query, new { userId });
+        return activityList;
     }
     public async Task<int> CreateActivityAsync(Activity activity)
     {

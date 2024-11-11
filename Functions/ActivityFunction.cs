@@ -60,6 +60,23 @@ namespace PersonalProjects.Function
 
             return new OkObjectResult(activityList);
         }
+        
+        [FunctionName("GetAllActivitiesByUser")]
+        [OpenApiOperation(operationId: "GetAllActivitiesByUser", tags: new[]{"Activities"})]
+        [OpenApiParameter(name: "userId", In = ParameterLocation.Path, Required = true, Type = typeof(int), Description = "The User id of activities")]
+        [OpenApiResponseWithBody(statusCode:HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(Activity), Description = "The Activity list for specified user Id")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "No activities found for specified user id")]
+        public async Task<IActionResult> GetAllActivitiesByUser(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user/{userId}/activities")] HttpRequest req,
+            int userId
+        )
+        {
+            var activityList = await _activityService.GetAllActivitiesByProjectAsync(userId);
+            
+            if(!activityList.Any()) return new NotFoundResult();
+
+            return new OkObjectResult(activityList);
+        }
 
         [FunctionName("CreateActivity")]
         [OpenApiOperation(operationId: "CreateActivity", tags: new[] { "Activities" })]
