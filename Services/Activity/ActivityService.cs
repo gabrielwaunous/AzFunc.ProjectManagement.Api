@@ -17,10 +17,8 @@ public class ActivityService (IActivityRepository activityRepository) : IActivit
     public async Task<IEnumerable<Activity>> GetAllActivitiesByUserAsync(int userId)
         => await _activityRepository.GetActivityByUserAsync(userId);
 
-    public Task<Activity> UpdateActivityAsync(Activity activity)
-    {
-        throw new System.NotImplementedException();
-    }
+    public async Task<Activity> UpdateActivityAsync(Activity activity)
+        => await _activityRepository.UpdateActivityAsync(activity);
     public Task<bool> DeleteActivityAsync(int id)
     {
         throw new System.NotImplementedException();

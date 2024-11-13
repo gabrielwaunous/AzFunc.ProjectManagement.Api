@@ -104,6 +104,24 @@ namespace PersonalProjects.Function
 
             return new CreatedResult($"/activity/{activity.id}", sanitizedActivity);
         }
+        [FunctionName("UpdateActivity")]
+        [OpenApiOperation(operationId: "UpdateActivity", tags: new[] {"Activities"})]
+        [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(Activity), Description = "Activity to update", Required = true)]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NoContent, Description = "Activity was updated")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "Activity was not found")]
+        public async Task<IActionResult> UpdateActivity(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "Activity")] HttpRequest req
+        )
+        {
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var activity = JsonConvert.DeserializeObject<Activity>(requestBody);
+
+            if(activity == null ) return new BadRequestResult();
+
+            await _activityService.UpdateActivityAsync(activity);
+
+            return new OkResult();
+        }
     }
 }
 
