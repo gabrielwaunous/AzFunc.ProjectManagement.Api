@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -70,13 +71,58 @@ public class ActivityRepository : IActivityRepository
         var parameters = new { activity.project_id, activity.user_id, activity.activity_type, activity.description };
         var result = await _dbConnection.QueryFirstOrDefaultAsync<int>(insertQuery, parameters);
         activity.id = result;
-        
+
         return result;
     }
 
-    public Task<Activity> UpdateActivityAsync(Activity activity)
+    public async Task<Activity> UpdateActivityAsync(Activity activity)
     {
-        throw new System.NotImplementedException();
+        var currentActivity = await GetActivityByIdAsync(activity.id);
+        if (currentActivity == null)
+        {
+            throw new Exception("Activity not found");
+        }
+
+        bool hasChanges = false;
+        var updateFields = new List<string>();
+
+        if (currentActivity.project_id != activity.project_id)
+        {
+            currentActivity.project_id = activity.project_id;
+            updateFields.Add("project_id = @project_id");
+            hasChanges = true;
+        }
+
+        if (currentActivity.user_id != activity.user_id)
+        {
+            currentActivity.user_id = activity.user_id;
+            updateFields.Add("user_id = @user_id");
+            hasChanges = true;
+        }
+
+        if (currentActivity.activity_type != activity.activity_type)
+        {
+            currentActivity.activity_type = activity.activity_type;
+            updateFields.Add("activity_type = @activity_type");
+            hasChanges = true;
+        }
+
+        if (currentActivity.description != activity.description)
+        {
+            currentActivity.description = activity.description;
+            updateFields.Add("description = @description");
+            hasChanges = true;
+        }
+
+        if (!hasChanges)
+        {
+            return currentActivity; // No se realizaron cambios
+        }
+
+        var query = $"UPDATE Activities SET {string.Join(", ", updateFields)} WHERE id = @id";
+        await _dbConnection.ExecuteAsync(query, currentActivity);
+
+        return currentActivity;
     }
     public Task<bool> DeleteActivityAsync(int id)
     {
