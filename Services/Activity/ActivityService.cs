@@ -19,8 +19,6 @@ public class ActivityService (IActivityRepository activityRepository) : IActivit
 
     public async Task<Activity> UpdateActivityAsync(Activity activity)
         => await _activityRepository.UpdateActivityAsync(activity);
-    public Task<bool> DeleteActivityAsync(int id)
-    {
-        throw new System.NotImplementedException();
-    }
+    public async Task<bool> DeleteActivityAsync(int id)
+        => await _activityRepository.DeleteActivityAsync(id);
 }

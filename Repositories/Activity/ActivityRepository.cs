@@ -124,8 +124,14 @@ public class ActivityRepository : IActivityRepository
 
         return currentActivity;
     }
-    public Task<bool> DeleteActivityAsync(int id)
+    public async Task<bool> DeleteActivityAsync(int id)
     {
-        throw new System.NotImplementedException();
+        var deleteQuery = @"
+        DELETE FROM Activities WHERE id = @id
+        ";
+
+        var response = await _dbConnection.ExecuteAsync(deleteQuery, new { id = id });
+
+        return response > 0;
     }
 }
