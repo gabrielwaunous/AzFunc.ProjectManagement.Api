@@ -122,6 +122,26 @@ namespace PersonalProjects.Function
 
             return new OkResult();
         }
+
+        [FunctionName("DeleteActivity")]
+        [OpenApiOperation(operationId: "DeleteActivity", tags: new[]{"Activities"})]
+        [OpenApiParameter(name:"activityId", In = ParameterLocation.Path, Required = true, Type = typeof(int), Description = "The Activity to delete")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NoContent, Description = "Activity was deleted")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "Activity was not found")]
+        public async Task<IActionResult> DeleteActivity(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "activity/{activityId}")] HttpRequest req,
+            int activityId
+        )
+        {
+            var activity = _activityService.GetActivityByIdAsync(activityId);
+
+            if(activity == null ) return new NotFoundResult();
+
+            await _activityService.DeleteActivityAsync(activityId);
+
+            return new NoContentResult();
+        }
+        
     }
 }
 
