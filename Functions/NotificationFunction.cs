@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -41,6 +42,25 @@ namespace PersonalProjects.Function
             if(notification == null ) return new NotFoundResult();
 
             return new OkObjectResult(notification);
+        }
+
+        [FunctionName("GetNotificationByUserId")]
+        [OpenApiOperation(operationId: "GetNotificationByUserId", tags: new[] { "Notifications" })]
+        [OpenApiParameter(name: "userId", In = ParameterLocation.Path, Required = true, Type = typeof(int), Description = "The user id")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(Notification), Description = "The Notification object")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "No Notification was found with given User id")]
+        public async Task<IActionResult> GetNotificationByUserId(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "notification/user/{userId}")] HttpRequest req,
+            int userId
+        )
+        {
+            _logger.LogInformation("Searching notifications for user id...");
+
+            var notificationList = await _service.GetNotificacionByUser(userId);
+
+            if(!notificationList.Any()) return new NotFoundResult();
+
+            return new OkObjectResult(notificationList);
         }
     }
 }

@@ -6,9 +6,19 @@ using Dapper;
 public class NotificationRepository(IDbConnection dbConnection) : INotificationRepository
 {
     private readonly IDbConnection _dbConnection = dbConnection;
-    public Task<IEnumerable<Notification>> GetNotificacionByUser(int userId)
+    public async Task<IEnumerable<Notification>> GetNotificacionByUser(int userId)
     {
-        throw new System.NotImplementedException();
+        var query = @"
+            SELECT [id]
+                ,[user_id]
+                ,[message]
+                ,[read]
+            FROM [dbo].[NOTIFICATIONS]
+            WHERE [user_id] = @user_id
+        ";
+
+        var notification  = await _dbConnection.QueryAsync<Notification>(query, new { user_id = userId });
+        return notification;
     }
     public async Task<Notification> GetNotificacionById(int id)
     {
@@ -17,7 +27,7 @@ public class NotificationRepository(IDbConnection dbConnection) : INotificationR
                 ,[user_id]
                 ,[message]
                 ,[read]
-            FROM [ProjectManagementDB].[dbo].[NOTIFICATIONS]
+            FROM [dbo].[NOTIFICATIONS]
             WHERE [id] = @id
         ";
 
