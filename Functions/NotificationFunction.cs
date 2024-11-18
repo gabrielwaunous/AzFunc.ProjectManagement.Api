@@ -16,20 +16,31 @@ namespace PersonalProjects.Function
     public class NotificationFunction
     {
         private readonly ILogger<NotificationFunction> _logger;
+        private readonly INotificationService _service;
 
-        public NotificationFunction(ILogger<NotificationFunction> log)
+        public NotificationFunction(ILogger<NotificationFunction> log, INotificationService service)
         {
             _logger = log;
+            _service = service;
         }
 
-        [FunctionName("NotificationFunction")]
-        [OpenApiOperation(operationId: "Run", tags: new[] { "name" })]
-        [OpenApiParameter(name: "name", In = ParameterLocation.Query, Required = true, Type = typeof(string), Description = "The **Name** parameter")]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "text/plain", bodyType: typeof(string), Description = "The OK response")]
-        public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req)
+        [FunctionName("GetNotificationById")]
+        [OpenApiOperation(operationId: "GetNotificationById", tags: new[] { "Notifications" })]
+        [OpenApiParameter(name: "id", In = ParameterLocation.Path, Required = true, Type = typeof(int), Description = "The notification id")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(Notification), Description = "The Notification object")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "No Notification was found with given id")]
+        public async Task<IActionResult> GetNotificationById(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "notification/{id}")] HttpRequest req,
+            int id
+        )
         {
-            throw new NotImplementedException();
+            _logger.LogInformation($"Searching Notification with id: {id}");
+
+            var notification = await _service.GetNotificacionById(id);
+
+            if(notification == null ) return new NotFoundResult();
+
+            return new OkObjectResult(notification);
         }
     }
 }
