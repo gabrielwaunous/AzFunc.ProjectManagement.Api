@@ -35,11 +35,15 @@ namespace PersonalProjects.Function
             builder.Services.AddSingleton<ITasksRepository,TasksRepository>();
             builder.Services.AddSingleton<IActivityRepository,ActivityRepository>();
             builder.Services.AddSingleton<INotificationRepository,NotificationRepository>();
+            builder.Services.AddSingleton<ITimeTrackingRepository,TimeTrackingRepository>();
 
             // Registra los Servicios
             builder.Services.AddSingleton<IUserService, UserService>();         
             builder.Services.AddSingleton<IProjectService, ProjectService>();         
+            builder.Services.AddSingleton<ITaskService, TaskService>();
+            builder.Services.AddSingleton<IActivityService, ActivityService>();
             builder.Services.AddSingleton<INotificationService, NotificationService>();
+            builder.Services.AddSingleton<ITimeTrackingService, TimeTrackingService>();
         }
     }
 }
